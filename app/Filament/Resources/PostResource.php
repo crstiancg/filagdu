@@ -11,19 +11,11 @@ use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\PostResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PostResource\RelationManagers;
-use Filament\Forms\Components\FileUpload;
 
 class PostResource extends Resource
 {
@@ -32,6 +24,9 @@ class PostResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationGroup = 'Content';
+
+    protected static ?string $recordTitleAttribute = 'title';
+
 
     public static function form(Form $form): Form
     {
@@ -49,8 +44,7 @@ class PostResource extends Resource
                     Forms\Components\TextInput::make('slug')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\FileUpload::make('thumbnail')
-                    ->image(),
+                    Forms\Components\FileUpload::make('thumbnail'),
                     Forms\Components\RichEditor::make('body')
                         ->required(),
                     Forms\Components\Toggle::make('active')
@@ -68,18 +62,28 @@ class PostResource extends Resource
             ]);
     }
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title'];
+    }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title'),
+                Tables\Columns\TextColumn::make('title')
+                ->searchable()
+                ->sortable(),
                 // Tables\Columns\TextColumn::make('slug'),
-                Tables\Columns\ImageColumn::make('thumbnail'),
+                
+                Tables\Columns\ImageColumn::make('thumbnail')
+                ->sortable(),
                 // Tables\Columns\TextColumn::make('body'),
                 Tables\Columns\IconColumn::make('active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('published')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
                 // Tables\Columns\TextColumn::make('user.name'),
                 // Tables\Columns\TextColumn::make('created_at')
                 //     ->dateTime(),
@@ -87,6 +91,7 @@ class PostResource extends Resource
                 //     ->dateTime(),
             ])
             ->filters([
+                // Filter::make('is_featured')->toggle()->query(fn (Builder $query): Builder => $query->where('active', 1)),
                 // Filter::make('published')->query(fn (Builder $query): Builder => $query->where('active', 1))
             ])
             ->actions([
@@ -114,5 +119,7 @@ class PostResource extends Resource
             'view' => Pages\ViewPost::route('/{record}'),
             'edit' => Pages\EditPost::route('/{record}/edit'),
         ];
-    }    
+    }  
+    
+    
 }
