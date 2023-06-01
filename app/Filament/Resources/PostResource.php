@@ -10,9 +10,17 @@ use Illuminate\Support\Str;
 use Filament\Resources\Form;
 use Filament\Resources\Table;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\Card;
 use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\DateTimePicker;
 use App\Filament\Resources\PostResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PostResource\RelationManagers;
@@ -27,34 +35,37 @@ class PostResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?string $navigationLabel = 'Publiaciones';
+
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Card::make()
+                Card::make()
                 ->schema([
-                    Forms\Components\TextInput::make('title')
+                    TextInput::make('title')
                     ->required()
                     ->maxLength(255)
                     ->reactive()
                     ->afterStateUpdated(function(Closure $set, $state){
                         $set('slug', Str::slug($state));
                     }),
-                    Forms\Components\TextInput::make('slug')
+                    TextInput::make('slug')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\FileUpload::make('thumbnail'),
-                    Forms\Components\RichEditor::make('body')
+                    FileUpload::make('thumbnail'),
+                    RichEditor::make('body')
                         ->required(),
-                    Forms\Components\Toggle::make('active')
+                    Toggle::make('active')
                         ->required(),
-                    Forms\Components\DateTimePicker::make('published')
+                    DateTimePicker::make('published')
                         ->required(),
-                    Forms\Components\Select::make('user_id')
+                    Select::make('user_id')
                         ->relationship('user', 'name')
                         ->required(),
-                    Forms\Components\Select::make('category_id')
+                    Select::make('category_id')
                         ->multiple()
                         ->relationship('categories', 'name')
                         ->required(),
@@ -91,6 +102,7 @@ class PostResource extends Resource
                 //     ->dateTime(),
             ])
             ->filters([
+                SelectFilter::make('Filter')->relationship('categories', 'name')
                 // Filter::make('is_featured')->toggle()->query(fn (Builder $query): Builder => $query->where('active', 1)),
                 // Filter::make('published')->query(fn (Builder $query): Builder => $query->where('active', 1))
             ])
