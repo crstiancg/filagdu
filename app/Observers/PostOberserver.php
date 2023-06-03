@@ -12,7 +12,7 @@ class PostOberserver
      */
     public function created(Post $post): void
     {
-        //
+        //        
     }
 
     /**

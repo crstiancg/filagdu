@@ -12,10 +12,11 @@ class ListPosts extends ListRecords
 
     protected static ?string $title = 'Publicaciones';
 
-    protected function getActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+
+    // protected function getActions(): array
+    // {
+    //     return [
+    //         Actions\CreateAction::make(),
+    //     ];
+    // }
 }

@@ -16,6 +16,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Filters\SelectFilter;
@@ -39,6 +40,10 @@ class PostResource extends Resource
 
 
 
+    public function query(Post $query)
+    {
+        $query->where('user_id', auth()->user()->id);
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -64,7 +69,9 @@ class PostResource extends Resource
                         ->required(),
                     Toggle::make('active')
                         ->required(),
-                    DateTimePicker::make('published')
+                        DatePicker::make('published')
+                    ->maxDate(now())
+                    
                         ->required(),
                     // Select::make('user_id')
                     //     ->relationship('user', 'name')
@@ -72,6 +79,7 @@ class PostResource extends Resource
                     Select::make('category_id')
                         ->multiple()
                         ->relationship('categories', 'name')
+                        ->preload()
                         ->required(),
                 ])
             ]);
@@ -100,7 +108,7 @@ class PostResource extends Resource
                 Tables\Columns\IconColumn::make('active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('published')
-                    ->dateTime()
+                    ->dateTime('d/m/Y')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name'),
                 // Tables\Columns\TextColumn::make('created_at')
