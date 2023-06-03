@@ -28,14 +28,14 @@ use App\Filament\Resources\PostResource\RelationManagers;
 class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
-
+    
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationGroup = 'Content';
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationLabel = 'Publiaciones';
+    protected static ?string $navigationLabel = 'Publicaciones';
 
 
 
@@ -55,16 +55,20 @@ class PostResource extends Resource
                     TextInput::make('slug')
                         ->required()
                         ->maxLength(255),
-                    FileUpload::make('thumbnail'),
+                    FileUpload::make('thumbnail')
+                    ->acceptedFileTypes(['application/pdf'])
+                    ->enableOpen()
+                    ->enableDownload()
+                    ->preserveFilenames(),
                     RichEditor::make('body')
                         ->required(),
                     Toggle::make('active')
                         ->required(),
                     DateTimePicker::make('published')
                         ->required(),
-                    Select::make('user_id')
-                        ->relationship('user', 'name')
-                        ->required(),
+                    // Select::make('user_id')
+                    //     ->relationship('user', 'name')
+                    //     ->required(),
                     Select::make('category_id')
                         ->multiple()
                         ->relationship('categories', 'name')
@@ -87,15 +91,18 @@ class PostResource extends Resource
                 ->sortable(),
                 // Tables\Columns\TextColumn::make('slug'),
                 
-                Tables\Columns\ImageColumn::make('thumbnail')
-                ->sortable(),
+                // Tables\Columns\ImageColumn::make('thumbnail')
+                // ->sortable()
+                // ->square()
+                // ->width(200)
+                // ->height(50),
                 // Tables\Columns\TextColumn::make('body'),
                 Tables\Columns\IconColumn::make('active')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('published')
                     ->dateTime()
                     ->sortable(),
-                // Tables\Columns\TextColumn::make('user.name'),
+                Tables\Columns\TextColumn::make('user.name'),
                 // Tables\Columns\TextColumn::make('created_at')
                 //     ->dateTime(),
                 // Tables\Columns\TextColumn::make('updated_at')
